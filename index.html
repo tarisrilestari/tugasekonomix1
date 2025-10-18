@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Pengantar Ilmu Ekonomi 🎓</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS untuk Tampilan Elegan, Modern, dan Responsif (Biru-Putih) */
+        :root {
+            --primary-color: #007bff; /* Biru Primer */
+            --secondary-color: #6c757d; /* Abu-abu Sekunder */
+            --bg-light: #f8f9fa; /* Latar Belakang Sangat Terang */
+            --bg-white: #ffffff; /* Latar Belakang Putih */
+            --text-dark: #343a40; /* Teks Gelap */
+            --border-light: #dee2e6; /* Border Tipis */
+            --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--bg-white);
+            border-radius: 12px;
+            box-shadow: var(--shadow-soft);
+            padding: 30px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Header dan Judul */
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        /* Tampilan Awal (Input Nama) */
+        #start-screen {
+            text-align: center;
+            padding: 20px;
+        }
+
+        #start-screen p {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        #name-input {
+            padding: 10px 15px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            width: 80%;
+            max-width: 300px;
+            margin-bottom: 20px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        #name-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        }
+
+        /* Tombol Utama */
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        .btn:hover:not(:disabled) {
+            background-color: #0056b3;
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            background-color: var(--secondary-color);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* Tampilan Kuis Utama */
+        #quiz-container {
+            display: none;
+        }
+
+        /* Indikator Nomor Soal */
+        #question-number-indicator {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            font-weight: 600;
+            color: var(--primary-color);
+            background-color: #e9f5ff;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        /* Card Soal */
+        #question-card {
+            background-color: var(--bg-white);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 20px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            /* Animasi Transisi */
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+        }
+
+        .question-visible {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+
+        #question-text {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+        }
+
+        /* Opsi Jawaban */
+        .options-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-item {
+            cursor: pointer;
+            padding: 12px 15px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+        }
+
+        .option-item:hover {
+            background-color: #f0f8ff;
+            border-color: var(--primary-color);
+        }
+
+        .option-item.selected {
+            background-color: #e6f7ff;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+            font-weight: 500;
+        }
+
+        .option-item.disabled {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        /* Radio button sembunyikan, gunakan styling custom */
+        .option-item input[type="radio"] {
+            display: none;
+        }
+
+        .option-label {
+            margin-left: 10px;
+        }
+
+        /* Navigasi */
+        #navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 12px 15px;
+            font-size: 1em;
+        }
+
+        #prev-btn {
+            background-color: var(--secondary-color);
+        }
+
+        #prev-btn:hover:not(:disabled) {
+            background-color: #5a6268;
+        }
+
+        #submit-btn {
+            display: none; /* Awalnya disembunyikan */
+            background-color: #28a745; /* Hijau untuk Kirim */
+        }
+
+        #submit-btn:hover:not(:disabled) {
+            background-color: #1e7e34;
+        }
+
+        /* Tampilan Hasil */
+        #results-screen {
+            text-align: center;
+            padding: 30px 20px;
+            display: none;
+        }
+
+        #results-screen h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        #score-display {
+            font-size: 3em;
+            font-weight: 700;
+            margin: 20px 0;
+            color: #28a745; /* Hijau untuk skor */
+        }
+
+        #motivation-message {
+            font-style: italic;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        /* Pesan Sudah Selesai */
+        #already-completed-message {
+            text-align: center;
+            padding: 50px 20px;
+            display: none;
+            background-color: #fff3cd; /* Warna kuning lembut */
+            border: 1px solid #ffeeba;
+            color: #856404;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        #already-completed-message h2 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+        
+        /* Tombol Download Hasil (Mode Guru/Admin) */
+        #download-results-btn {
+            display: block;
+            margin: 20px auto 0;
+            background-color: #ffc107; /* Kuning untuk Download */
+            color: var(--text-dark);
+        }
+
+        #download-results-btn:hover {
+            background-color: #e0a800;
+            color: var(--text-dark);
+        }
+
+        /* Responsif */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            #question-text {
+                font-size: 1.1em;
+            }
+
+            .btn, .nav-btn {
+                padding: 10px 15px;
+                font-size: 0.95em;
+            }
+
+            #navigation-buttons {
+                flex-direction: column;
+            }
+
+            .nav-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Kuis Pengantar Ilmu Ekonomi 🎓</h1>
+
+        <div id="already-completed-message" style="display: none;">
+            <h2>🚫 Kuis Sudah Selesai</h2>
+            <p>Kamu sudah menyelesaikan kuis ini. Terima kasih!</p>
+            <button id="download-results-btn" class="btn">Download Hasil (Simulasi Guru)</button>
+        </div>
+
+        <div id="start-screen">
+            <p>Masukkan nama Anda untuk memulai kuis:</p>
+            <input type="text" id="name-input" placeholder="Nama Lengkap Siswa" autocomplete="off">
+            <button id="start-quiz-btn" class="btn" disabled>Mulai Kuis</button>
+        </div>
+
+        <div id="quiz-container" style="display: none;">
+            <div id="question-number-indicator"></div>
+
+            <div id="question-card" class="question-visible">
+                <p id="question-text">Memuat pertanyaan...</p>
+                <ul id="options-list" class="options-list">
+                    </ul>
+            </div>
+
+            <div id="navigation-buttons">
+                <button id="prev-btn" class="btn nav-btn" disabled>« Sebelumnya</button>
+                <button id="next-btn" class="btn nav-btn">Selanjutnya »</button>
+                <button id="submit-btn" class="btn nav-btn" style="display: none;">Kirim Jawaban</button>
+            </div>
+        </div>
+
+        <div id="results-screen" style="display: none;">
+            <h2>Hasil Kuis Anda 🎉</h2>
+            <p>Halo, <span id="student-name-result"></span>!</p>
+            <div id="score-display"></div>
+            <p id="motivation-message"></p>
+            <button id="download-results-btn-post" class="btn">Download Hasil (Simulasi Guru)</button>
+        </div>
+    </div>
+
+    <script>
+        // Data Soal Pilihan Ganda Pengantar Ilmu Ekonomi (25 Soal)
+        const quizData = [
+            {
+                question: "Masalah inti dalam ilmu ekonomi yang mendasari semua kajian adalah...",
+                options: ["A. Inflasi dan pengangguran.", "B. Ketimpangan pendapatan.", "C. Kelangkaan (scarcity).", "D. Defisit anggaran pemerintah.", "E. Globalisasi perdagangan."],
+                answer: "C. Kelangkaan (scarcity)."
+            },
+            {
+                question: "Pilihan-pilihan yang harus diambil oleh individu atau masyarakat akibat kelangkaan dikenal sebagai...",
+                options: ["A. Biaya implisit.", "B. Biaya peluang (opportunity cost).", "C. Biaya tetap.", "D. Biaya marginal.", "E. Surplus konsumen."],
+                answer: "B. Biaya peluang (opportunity cost)."
+            },
+            {
+                question: "Tiga masalah pokok ekonomi yang mendasar adalah...",
+                options: ["A. Kapan, di mana, dan siapa yang memproduksi.", "B. Apa, bagaimana, dan untuk siapa barang diproduksi.", "C. Mengapa, kapan, dan berapa banyak barang diproduksi.", "D. Siapa yang mengonsumsi, berapa banyak, dan mengapa.", "E. Investasi, tabungan, dan konsumsi."],
+                answer: "B. Apa, bagaimana, dan untuk siapa barang diproduksi."
+            },
+            {
+                question: "Pernyataan ekonomi yang bersifat deskriptif dan dapat dibuktikan kebenarannya disebut ekonomi...",
+                options: ["A. Normatif.", "B. Subjektif.", "C. Makro.", "D. Positif.", "E. Mikro."],
+                answer: "D. Positif."
+            },
+            {
+                question: "Pernyataan ekonomi yang mengandung nilai, pendapat, atau anjuran (seperti 'Pemerintah *seharusnya* menaikkan pajak') disebut ekonomi...",
+                options: ["A. Positif.", "B. Deskriptif.", "C. Terapan.", "D. Normatif.", "E. Murni."],
+                answer: "D. Normatif."
+            },
+            {
+                question: "Ilmu ekonomi yang mempelajari perilaku unit-unit ekonomi secara individual (seperti konsumen, produsen, dan pasar tertentu) disebut...",
+                options: ["A. Ekonomi Makro.", "B. Ekonomi Global.", "C. Ekonomi Moneter.", "D. Ekonomi Mikro.", "E. Ekonomi Regional."],
+                answer: "D. Ekonomi Mikro."
+            },
+            {
+                question: "Ilmu ekonomi yang mempelajari fenomena ekonomi secara keseluruhan (agregat), seperti inflasi, pengangguran, dan pertumbuhan ekonomi nasional, disebut...",
+                options: ["A. Ekonomi Mikro.", "B. Ekonomi Manajerial.", "C. Ekonomi Makro.", "D. Ekonomi Deskriptif.", "E. Ekonomi Lingkungan."],
+                answer: "C. Ekonomi Makro."
+            },
+            {
+                question: "Sistem ekonomi di mana keputusan mengenai apa, bagaimana, dan untuk siapa diproduksi sepenuhnya ditentukan oleh mekanisme pasar (penawaran dan permintaan) disebut sistem ekonomi...",
+                options: ["A. Komando.", "B. Tradisional.", "C. Campuran.", "D. Terpusat.", "E. Pasar (Bebas)."],
+                answer: "E. Pasar (Bebas)."
+            },
+            {
+                question: "Kurva yang menunjukkan berbagai kombinasi output dua jenis barang yang dapat diproduksi dengan sumber daya dan teknologi yang tersedia secara penuh dan efisien disebut...",
+                options: ["A. Kurva Permintaan Agregat.", "B. Kurva Indiferensi.", "C. Kurva Kemungkinan Produksi (PPC).", "D. Kurva Penawaran.", "E. Kurva Phillips."],
+                answer: "C. Kurva Kemungkinan Produksi (PPC)."
+            },
+            {
+                question: "Faktor produksi utama terdiri dari empat kategori, yaitu...",
+                options: ["A. Uang, tenaga kerja, modal, dan teknologi.", "B. Tanah, tenaga kerja, modal, dan teknologi.", "C. Tanah, tenaga kerja, modal, dan kewirausahaan (entrepeneurship).", "D. Tanah, uang, pasar, dan pemerintah.", "E. Permintaan, penawaran, harga, dan kuantitas."],
+                answer: "C. Tanah, tenaga kerja, modal, dan kewirausahaan (entrepeneurship)."
+            },
+            {
+                question: "Hukum permintaan menyatakan bahwa, *ceteris paribus*...",
+                options: ["A. Semakin tinggi harga, semakin banyak barang yang ditawarkan.", "B. Semakin rendah harga, semakin sedikit barang yang diminta.", "C. Semakin tinggi pendapatan, semakin banyak barang yang diminta.", "D. Semakin tinggi harga suatu barang, semakin sedikit kuantitas yang diminta.", "E. Semakin tinggi harga, semakin besar elastisitas permintaan."],
+                answer: "D. Semakin tinggi harga suatu barang, semakin sedikit kuantitas yang diminta."
+            },
+            {
+                question: "Hukum penawaran menyatakan bahwa, *ceteris paribus*...",
+                options: ["A. Semakin tinggi harga, semakin banyak barang yang diminta.", "B. Semakin rendah harga, semakin banyak barang yang ditawarkan.", "C. Semakin tinggi harga suatu barang, semakin banyak kuantitas yang ditawarkan.", "D. Biaya produksi tidak mempengaruhi jumlah penawaran.", "E. Permintaan akan selalu lebih besar dari penawaran."],
+                answer: "C. Semakin tinggi harga suatu barang, semakin banyak kuantitas yang ditawarkan."
+            },
+            {
+                question: "Titik di mana kuantitas barang yang diminta sama dengan kuantitas barang yang ditawarkan disebut...",
+                options: ["A. Surplus.", "B. Defisit.", "C. Titik impas (Break-even point).", "D. Keseimbangan pasar (Equilibrium).", "E. Titik jenuh."],
+                answer: "D. Keseimbangan pasar (Equilibrium)."
+            },
+            {
+                question: "Elastisitas permintaan yang nilainya lebih besar dari 1 (E > 1) menunjukkan permintaan bersifat...",
+                options: ["A. Inelastis sempurna.", "B. Inelastis.", "C. Elastis uniter.", "D. Elastis.", "E. Elastis sempurna."],
+                answer: "D. Elastis."
+            },
+            {
+                question: "Peningkatan pendapatan konsumen akan menggeser kurva permintaan untuk barang normal ke...",
+                options: ["A. Kanan (naik).", "B. Kiri (turun).", "C. Atas sepanjang kurva.", "D. Bawah sepanjang kurva.", "E. Tidak bergerak."],
+                answer: "A. Kanan (naik)."
+            },
+            {
+                question: "Istilah yang merujuk pada perubahan total penerimaan (revenue) yang dihasilkan dari penjualan satu unit output tambahan adalah...",
+                options: ["A. Pendapatan total (Total Revenue).", "B. Pendapatan rata-rata (Average Revenue).", "C. Pendapatan marginal (Marginal Revenue).", "D. Laba akuntansi.", "E. Laba ekonomi."],
+                answer: "C. Pendapatan marginal (Marginal Revenue)."
+            },
+            {
+                question: "Struktur pasar di mana terdapat banyak pembeli dan banyak penjual dengan produk yang homogen, dan tidak ada satupun yang dapat mempengaruhi harga, disebut...",
+                options: ["A. Monopoli.", "B. Oligopoli.", "C. Persaingan Sempurna.", "D. Monopolistik.", "E. Monopsoni."],
+                answer: "C. Persaingan Sempurna."
+            },
+            {
+                question: "Produk Domestik Bruto (PDB) adalah...",
+                options: ["A. Total nilai impor dan ekspor suatu negara.", "B. Total pendapatan yang diterima penduduk suatu negara.", "C. Total nilai barang dan jasa akhir yang diproduksi oleh suatu negara dalam periode tertentu.", "D. Total aset yang dimiliki oleh pemerintah.", "E. Jumlah uang yang beredar di masyarakat."],
+                answer: "C. Total nilai barang dan jasa akhir yang diproduksi oleh suatu negara dalam periode tertentu."
+            },
+            {
+                question: "Fenomena kenaikan harga barang dan jasa secara umum dan terus menerus dalam jangka waktu tertentu disebut...",
+                options: ["A. Deflasi.", "B. Depresiasi.", "C. Inflasi.", "D. Resesi.", "E. Stagnasi."],
+                answer: "C. Inflasi."
+            },
+            {
+                question: "Alat kebijakan moneter utama yang digunakan bank sentral untuk mengontrol jumlah uang beredar adalah...",
+                options: ["A. Pengeluaran pemerintah dan perpajakan.", "B. Kebijakan diskonto, operasi pasar terbuka, dan Giro Wajib Minimum (GWM).", "C. Subsidi dan tarif.", "D. Penetapan upah minimum.", "E. Pengawasan harga barang tertentu."],
+                answer: "B. Kebijakan diskonto, operasi pasar terbuka, dan Giro Wajib Minimum (GWM)."
+            },
+            {
+                question: "Kebijakan fiskal mengacu pada penggunaan alat-alat pemerintah untuk mempengaruhi perekonomian, yaitu...",
+                options: ["A. Suku bunga dan cadangan wajib.", "B. Perpajakan dan pengeluaran pemerintah.", "C. Nilai tukar mata uang.", "D. Operasi pasar terbuka.", "E. Kontrol harga."],
+                answer: "B. Perpajakan dan pengeluaran pemerintah."
+            },
+            {
+                question: "Situasi di mana individu yang bersedia dan mampu bekerja pada tingkat upah yang berlaku tidak dapat menemukan pekerjaan disebut...",
+                options: ["A. Stagnasi.", "B. Devaluasi.", "C. Ketimpangan.", "D. Pengangguran.", "E. Perekrutan."],
+                answer: "D. Pengangguran."
+            },
+            {
+                question: "Apa yang dimaksud dengan 'barang publik'?",
+                options: ["A. Barang yang diproduksi oleh BUMN.", "B. Barang yang dapat digunakan oleh banyak orang tanpa mengurangi ketersediaan bagi orang lain (non-rival) dan sulit untuk mengecualikan orang lain dari penggunanya (non-excludable).", "C. Barang yang harganya dikontrol oleh pemerintah.", "D. Barang yang hanya tersedia untuk orang miskin.", "E. Barang yang diperdagangkan secara internasional."],
+                answer: "B. Barang yang dapat digunakan oleh banyak orang tanpa mengurangi ketersediaan bagi orang lain (non-rival) dan sulit untuk mengecualikan orang lain dari penggunanya (non-excludable)."
+            },
+            {
+                question: "Istilah 'eksternalitas negatif' dalam ekonomi merujuk pada...",
+                options: ["A. Dampak positif dari suatu kegiatan ekonomi terhadap pihak ketiga yang tidak terlibat.", "B. Dampak negatif dari suatu kegiatan ekonomi terhadap pihak ketiga yang tidak terlibat (misalnya polusi).", "C. Biaya produksi yang lebih rendah dari yang diharapkan.", "D. Keuntungan yang diperoleh pemerintah dari pajak.", "E. Perubahan harga barang di pasar global."],
+                answer: "B. Dampak negatif dari suatu kegiatan ekonomi terhadap pihak ketiga yang tidak terlibat (misalnya polusi)."
+            },
+            {
+                question: "Konsep yang menyatakan bahwa perekonomian dapat mencapai tingkat kesempatan kerja penuh dalam jangka panjang tanpa intervensi pemerintah yang berlebihan dikenal dari aliran...",
+                options: ["A. Keynesian.", "B. Neoklasik.", "C. Marxis.", "D. Fisiokrat.", "E. Moneteris."],
+                answer: "B. Neoklasik."
+            }
+        ];
+
+        // Variabel Status Kuis
+        let currentQuestionIndex = 0;
+        const userAnswers = new Array(quizData.length).fill(null);
+        let studentName = '';
+        let quizStartTime;
+
+        // Elemen DOM
+        const startScreen = document.getElementById('start-screen');
+        const quizContainer = document.getElementById('quiz-container');
+        const resultsScreen = document.getElementById('results-screen');
+        const alreadyCompletedMessage = document.getElementById('already-completed-message');
+        const startQuizBtn = document.getElementById('start-quiz-btn');
+        const nameInput = document.getElementById('name-input');
+        const questionNumberIndicator = document.getElementById('question-number-indicator');
+        const questionCard = document.getElementById('question-card');
+        const questionText = document.getElementById('question-text');
+        const optionsList = document.getElementById('options-list');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const scoreDisplay = document.getElementById('score-display');
+        const studentNameResult = document.getElementById('student-name-result');
+        const motivationMessage = document.getElementById('motivation-message');
+        const downloadResultsBtn = document.getElementById('download-results-btn');
+        const downloadResultsBtnPost = document.getElementById('download-results-btn-post');
+
+        // Konstanta localStorage
+        const STORAGE_KEY_COMPLETED = 'quizCompleted';
+        const STORAGE_KEY_RESULTS = 'quizResults';
+
+        /**
+         * Memuat pertanyaan dan opsi ke dalam DOM.
+         * @param {number} index - Indeks pertanyaan yang akan ditampilkan.
+         */
+        function loadQuestion(index) {
+            // Animasi transisi keluar
+            questionCard.classList.remove('question-visible');
+            setTimeout(() => {
+                // Tampilkan konten baru setelah transisi keluar
+                const question = quizData[index];
+                questionText.textContent = question.question;
+                optionsList.innerHTML = '';
+                questionNumberIndicator.textContent = `${index + 1} dari ${quizData.length}`;
+
+                question.options.forEach((option, optionIndex) => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'option-item';
+                    listItem.setAttribute('data-answer', option);
+
+                    const radioInput = document.createElement('input');
+                    radioInput.type = 'radio';
+                    radioInput.name = 'answer';
+                    radioInput.id = `option-${optionIndex}`;
+                    radioInput.value = option;
+                    
+                    const label = document.createElement('label');
+                    label.className = 'option-label';
+                    label.textContent = option;
+                    label.htmlFor = `option-${optionIndex}`;
+                    
+                    listItem.appendChild(radioInput);
+                    listItem.appendChild(label);
+                    optionsList.appendChild(listItem);
+
+                    // Tandai opsi yang sudah dipilih
+                    if (userAnswers[index] === option) {
+                        listItem.classList.add('selected');
+                        radioInput.checked = true;
+                    }
+
+                    // Tambahkan event listener untuk memilih jawaban
+                    listItem.addEventListener('click', (e) => {
+                        // Hanya izinkan memilih jika kuis belum selesai
+                        if (localStorage.getItem(STORAGE_KEY_COMPLETED) !== 'true') {
+                            selectAnswer(index, option);
+                        }
+                    });
+                });
+
+                updateNavigationButtons();
+
+                // Animasi transisi masuk
+                questionCard.classList.add('question-visible');
+            }, 400); // Durasi harus sinkron dengan CSS transition
+        }
+
+        /**
+         * Menyimpan jawaban pengguna dan memperbarui tampilan opsi.
+         * @param {number} index - Indeks pertanyaan.
+         * @param {string} selectedOption - Opsi yang dipilih.
+         */
+        function selectAnswer(index, selectedOption) {
+            // Hapus status 'selected' dari semua opsi
+            document.querySelectorAll('.option-item').forEach(item => {
+                item.classList.remove('selected');
+                item.querySelector('input[type="radio"]').checked = false;
+            });
+
+            // Set jawaban pengguna dan tandai opsi yang dipilih
+            userAnswers[index] = selectedOption;
+            const selectedItem = optionsList.querySelector(`[data-answer="${selectedOption}"]`);
+            if (selectedItem) {
+                selectedItem.classList.add('selected');
+                selectedItem.querySelector('input[type="radio"]').checked = true;
+            }
+        }
+
+        /**
+         * Memperbarui status tombol navigasi (Sebelumnya, Selanjutnya, Kirim).
+         */
+        function updateNavigationButtons() {
+            // Tombol 'Sebelumnya'
+            prevBtn.disabled = currentQuestionIndex === 0;
+
+            // Tombol 'Selanjutnya'
+            if (currentQuestionIndex < quizData.length - 1) {
+                nextBtn.style.display = 'inline-block';
+                submitBtn.style.display = 'none';
+                nextBtn.disabled = userAnswers[currentQuestionIndex] === null; // Tidak bisa lanjut jika belum dijawab
+            } else {
+                // Tampilkan tombol 'Kirim Jawaban' di soal terakhir
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'inline-block';
+                submitBtn.disabled = userAnswers[currentQuestionIndex] === null; // Tidak bisa kirim jika belum dijawab
+            }
+
+            // Nonaktifkan semua tombol dan opsi jika kuis sudah selesai
+            if (localStorage.getItem(STORAGE_KEY_COMPLETED) === 'true') {
+                prevBtn.disabled = true;
+                nextBtn.disabled = true;
+                submitBtn.disabled = true;
+                document.querySelectorAll('.option-item').forEach(item => item.classList.add('disabled'));
+            }
+        }
+
+        /**
+         * Menghitung dan menampilkan hasil kuis.
+         */
+        function calculateAndShowResults() {
+            let correctCount = 0;
+            userAnswers.forEach((answer, index) => {
+                if (answer === quizData[index].answer) {
+                    correctCount++;
+                }
+            });
+
+            const maxScore = quizData.length * 4; // Misalnya, setiap soal bernilai 4 poin (total 100)
+            const score = (correctCount / quizData.length) * 100;
+            const formattedScore = score.toFixed(0);
+
+            // Simpan hasil ke localStorage
+            saveResults(correctCount, formattedScore);
+
+            // Tampilkan hasil
+            quizContainer.style.display = 'none';
+            resultsScreen.style.display = 'block';
+            
+            studentNameResult.textContent = studentName;
+            scoreDisplay.textContent = `Skor Anda: ${formattedScore} / 100 (Benar: ${correctCount} dari ${quizData.length})`;
+            
+            if (score >= 80) {
+                motivationMessage.textContent = 'Kerja bagus! Terus tingkatkan kemampuanmu 💪';
+            } else if (score >= 50) {
+                motivationMessage.textContent = 'Cukup baik! Ada ruang untuk perbaikan. Semangat belajar! ✨';
+            } else {
+                motivationMessage.textContent = 'Tetap semangat! Jangan menyerah dan coba pelajari lagi materinya. 💡';
+            }
+        }
+
+        /**
+         * Menyimpan hasil kuis ke localStorage (simulasi penyimpanan data).
+         * @param {number} correctCount - Jumlah jawaban benar.
+         * @param {string} score - Skor akhir (0-100).
+         */
+        function saveResults(correctCount, score) {
+            localStorage.setItem(STORAGE_KEY_COMPLETED, 'true');
+            
+            const finishTime = new Date();
+            const duration = Math.round((finishTime - quizStartTime) / 1000); // Durasi dalam detik
+            
+            const newResult = {
+                Nama: studentName,
+                Skor: `${score} (${correctCount}/${quizData.length})`,
+                'Waktu Selesai (s)': duration,
+                Tanggal: finishTime.toLocaleString('id-ID')
+            };
+
+            // Ambil data hasil yang sudah ada, atau buat array baru
+            let results = JSON.parse(localStorage.getItem(STORAGE_KEY_RESULTS) || '[]');
+            results.push(newResult);
+            
+            // Simpan kembali data hasil
+            localStorage.setItem(STORAGE_KEY_RESULTS, JSON.stringify(results));
+        }
+
+        /**
+         * Simulasi fitur download hasil dalam format CSV.
+         */
+        function downloadResults() {
+            const results = JSON.parse(localStorage.getItem(STORAGE_KEY_RESULTS) || '[]');
+            if (results.length === 0) {
+                alert("Belum ada hasil kuis yang tersimpan.");
+                return;
+            }
+
+            let csvContent = "Nama,Skor,Waktu Selesai (s),Tanggal\n"; // Header CSV
+            
+            results.forEach(row => {
+                csvContent += `${row.Nama},${row.Skor},${row['Waktu Selesai (s)']},"${row.Tanggal}"\n`;
+            });
+
+            // Buat Blob dan link download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            if (link.download !== undefined) { 
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", "hasil_kuis_ekonomi.csv");
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                alert(`Data ${results.length} hasil kuis telah berhasil diunduh!`);
+            } else {
+                alert("Browser Anda tidak mendukung fitur download otomatis.");
+            }
+        }
+
+        /**
+         * Inisialisasi aplikasi kuis.
+         */
+        function initializeQuiz() {
+            // Cek status kuis di localStorage
+            if (localStorage.getItem(STORAGE_KEY_COMPLETED) === 'true') {
+                startScreen.style.display = 'none';
+                alreadyCompletedMessage.style.display = 'block';
+                // Tampilkan tombol download hasil
+                downloadResultsBtn.style.display = 'block'; 
+                downloadResultsBtnPost.style.display = 'block'; // Di layar hasil, jika sudah selesai
+            } else {
+                startScreen.style.display = 'block';
+                alreadyCompletedMessage.style.display = 'none';
+                downloadResultsBtn.style.display = 'none';
+                downloadResultsBtnPost.style.display = 'none';
+            }
+
+            // Event Listener Tombol Mulai Kuis
+            startQuizBtn.addEventListener('click', () => {
+                studentName = nameInput.value.trim();
+                if (studentName) {
+                    startScreen.style.display = 'none';
+                    quizContainer.style.display = 'block';
+                    quizStartTime = new Date(); // Catat waktu mulai
+                    loadQuestion(currentQuestionIndex);
+                }
+            });
+
+            // Event Listener Input Nama (Aktifkan tombol Mulai)
+            nameInput.addEventListener('input', () => {
+                startQuizBtn.disabled = nameInput.value.trim() === '';
+            });
+
+            // Event Listener Navigasi
+            nextBtn.addEventListener('click', () => {
+                // Pastikan soal saat ini sudah dijawab sebelum pindah
+                if (userAnswers[currentQuestionIndex] !== null) {
+                    currentQuestionIndex++;
+                    if (currentQuestionIndex < quizData.length) {
+                        loadQuestion(currentQuestionIndex);
+                    }
+                }
+            });
+
+            prevBtn.addEventListener('click', () => {
+                if (currentQuestionIndex > 0) {
+                    currentQuestionIndex--;
+                    loadQuestion(currentQuestionIndex);
+                }
+            });
+
+            // Event Listener Kirim Jawaban
+            submitBtn.addEventListener('click', () => {
+                if (confirm("Anda yakin ingin mengirim jawaban kuis? Aksi ini tidak dapat dibatalkan.")) {
+                    calculateAndShowResults();
+                }
+            });
+
+            // Event Listener Tombol Download Hasil
+            [downloadResultsBtn, downloadResultsBtnPost].forEach(btn => {
+                btn.addEventListener('click', downloadResults);
+            });
+        }
+
+        // Jalankan inisialisasi aplikasi
+        initializeQuiz();
+    </script>
+</body>
+</html>
